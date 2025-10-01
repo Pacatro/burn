@@ -24,6 +24,7 @@ pub enum UnaryNodeKind {
     // Input and output tensor types (required for codegen imports)
     Cast(Option<TensorKind>, Option<TensorKind>),
     Abs,
+    Acos,
     Cos,
     Cosh,
     Erf,
@@ -58,6 +59,7 @@ impl UnaryNodeKind {
         match self {
             Self::Cast(..) => "cast",
             Self::Abs => "abs",
+            Self::Acos => "acos",
             Self::Cos => "cos",
             Self::Cosh => "cosh",
             Self::Erf => "erf",
@@ -371,6 +373,11 @@ impl UnaryNode {
     pub(crate) fn is_nan(input: Type, output: Type) -> Self {
         let function = move |input| quote! { #input.is_nan() };
         Self::new(input, output, UnaryNodeKind::IsNaN, Rc::new(function))
+    }
+
+    pub(crate) fn acos(input: Type, output: Type) -> Self {
+        let function = move |input| quote! { #input.acos()};
+        Self::new(input, output, UnaryNodeKind::Acos, Rc::new(function))
     }
 }
 
@@ -1008,6 +1015,25 @@ mod tests {
             quote! {
                 pub fn forward(&self, tensor1: Tensor<B, 4>) -> Tensor<B, 4> {
                     let tensor2 = tensor1.abs();
+
+                    tensor2
+                }
+            },
+            vec!["tensor1".to_string()],
+            vec!["tensor2".to_string()],
+        );
+    }
+
+    #[test]
+    fn test_unary_codegen_acos() {
+        one_node_graph(
+            UnaryNode::acos(
+                Type::Tensor(TensorType::new_float("tensor1", 4)),
+                Type::Tensor(TensorType::new_float("tensor2", 4)),
+            ),
+            quote! {
+                pub fn forward(&self, tensor1: Tensor<B, 4>) -> Tensor<B, 4> {
+                    let tensor2 = tensor1.acos();
 
                     tensor2
                 }

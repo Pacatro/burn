@@ -502,6 +502,7 @@ impl ParsedOnnxGraph {
                 NodeType::IsInf => graph.register(Self::is_inf_conversion(node)),
                 NodeType::Identity => graph.register(Self::identity_conversion(node)),
                 NodeType::Abs => graph.register(Self::abs_conversion(node)),
+                NodeType::Acos => graph.register(Self::acos_conversion(node)),
                 node_type => unsupported_ops.push(node_type),
             }
         }
@@ -2033,6 +2034,13 @@ impl ParsedOnnxGraph {
             AttentionNodeOutputs::new(y, present_key, present_value, qk_matmul_output),
             config,
         )
+    }
+
+    fn acos_conversion(node: Node) -> UnaryNode {
+        let input = Type::from(node.inputs.first().unwrap());
+        let output = Type::from(node.outputs.first().unwrap());
+
+        UnaryNode::acos(input, output)
     }
 }
 

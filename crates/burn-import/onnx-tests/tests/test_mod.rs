@@ -12,6 +12,7 @@ mod backend;
 
 // Import individual node modules
 pub mod abs;
+pub mod acos;
 pub mod add;
 pub mod and;
 pub mod argmax;

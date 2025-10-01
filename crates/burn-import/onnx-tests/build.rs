@@ -7,6 +7,7 @@ fn main() {
     // Add onnx models.
     ModelGen::new()
         .input("tests/abs/abs.onnx")
+        .input("tests/acos/acos.onnx")
         .input("tests/add/add.onnx")
         .input("tests/add/add_shape.onnx")
         .input("tests/add/add_broadcast.onnx")
